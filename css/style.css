@@ -1,0 +1,46 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border;
+}
+
+header{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 37.5rem;
+    background-image: url("https://st3.depositphotos.com/8844370/36094/i/450/depositphotos_360942854-stock-photo-krasnoyarsk-russia-april-2020-red.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+}
+
+h1{
+    font-size: 6.25rem;
+    color: aqua;
+}
+
+.navbar{
+    display: flex;
+    gap: 3.125rem;
+    list-style: none;
+}
+
+.navbar a{
+    text-decoration: none;
+    color: aqua;
+    font-size: 2rem;
+}
+
+h2{
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+article{
+    font-size: 2rem;
+    margin: 1.25rem;
+    text-align: justify;
+}
