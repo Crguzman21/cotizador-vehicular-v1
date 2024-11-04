@@ -8,34 +8,38 @@
 </head>
 <body>
     <header>
+
         <h1>Cotizador Vehicular</h1>
-        <div>
-            <nav>
-                <ul class="navbar">
-                    <li><a href="">Impuesto Vehicular</a></li>
-                    <li><a href="">SOAT</a></li>
-                    <li><a href="">Seguro Vehicular</a></li>
-                </ul>
-            </nav>
-        </div>
+
     </header>
     <main>
         <h2>!BIENVENIDOS¡</h2>
         <article>Nuestra plataforma de cotización vehicular esta diseñada para facilitar el pago de tu obligación vehicular <br>
         Este sistema te ayudara ahorrar tiempo comparando nuestras opciones rapidas y eficiente, ¡Empieza ahora y obtén la mejor cotización para tu vehículo! <br>
-        • Impuesto Vehicular: Calcula y paga los impuestos correspondientes a tu vehículo. <br>
-        • SOAT: Encuentra el mejor precio para tu Seguro Obligatorio de Accidentes de Tránsito (SOAT) y mantén tu vehículo protegido. <br>
         • Seguro Vehicular: Compara diferentes planes de seguros vehiculares y elige el que mejor se ajuste a tus necesidades. <br>
+        • SOAT: Encuentra el mejor precio para tu Seguro Obligatorio de Accidentes de Tránsito (SOAT) y mantén tu vehículo protegido. <br>
+        • Impuesto Vehicular: Calcula y paga los impuestos correspondientes a tu vehículo. <br>
         </article>
+        
+        <div class="container">
+            <h2>Seleccione Tipo De Servicio</h2>
+            <select id="tipoServicio">
+                <option value="seguro">Seguro Vehicular</option>
+                <option value="soat">SOAT</option>
+                <option value="impuesto">Impuesto Vehicular</option>
+            </select>
+
+            <div id="form"></div>
+
+            <button id="botonCalcular">Calcular</button>
+
+            <div id="resultado"></div>
+
+        </div>
     </main>
     <footer>
 
     </footer>
-
-
-
-
-
 
     <script src="./javascript/index.js"></script>
 </body>
