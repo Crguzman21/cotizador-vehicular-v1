@@ -34,11 +34,14 @@ const ANTIGUEDAD = {
 
 };
 
-document.getElementById('tipoServicio').addEventListener('change', mostrarForm);
-document.getElementById('botonCalcular').addEventListener('click', cotizar);
+const ITEMSCARRITO = document.getElementById('items-carrito');
+const TOTALCOMPRA = document.getElementById('total-compra');
+const CANTIDADCARRITO = document.getElementById('cantidad-carrito');
+const SECCIONCARRITO = document.getElementById('carrito'); 
 
 
-function mostrarForm(){
+
+document.getElementById('tipoServicio').addEventListener('change', function(){
     const TIPOSERVICIO = document.getElementById('tipoServicio').value;
     const FORM = document.getElementById('form');
 
@@ -60,7 +63,7 @@ function mostrarForm(){
         <label for = "tipoSeguro">Tipo de Seguro: </label>
         <select id = "tipoSeguro">
             <option value = "basico">Básico</option>
-            <option value = "completo">COmpleto</option>
+            <option value = "completo">Completo</option>
         </select>`;
     }else if(TIPOSERVICIO === 'soat'){
 
@@ -91,7 +94,41 @@ function mostrarForm(){
     }
 
     FORM.innerHTML = info;
-}
+});
+
+
+document.getElementById('botonCalcular').addEventListener('click', function() {
+    const RESULTADO = cotizar();
+    if (RESULTADO.nombre) {
+        Swal.fire('Cotización', `${RESULTADO.nombre}: $${RESULTADO.precio}`, 'info');
+    } else {
+        Swal.fire('Error', 'Selecciona un tipo de servicio', 'error');
+    }
+});
+
+document.getElementById('boton-comprar-todo').addEventListener('click', function() {
+    if (carrito.length === 0) {
+        Swal.fire('Carrito Vacío', 'No hay productos en el carrito', 'error');
+    } else {
+        Swal.fire('Compra Exitosa', `Total: $${carrito.reduce((suma, item) => suma + item.precio, 0)}`, 'success');
+        carrito = [];
+        localStorage.removeItem('carrito');
+        actualizarCarrito();
+    }
+});
+
+document.getElementById('botonAnadirCarrito').addEventListener('click', function() {
+    let producto = cotizar();
+    if (producto.nombre && producto.precio > 0) {
+        carrito.push(producto);
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+        Swal.fire('Añadido al Carrito', `${producto.nombre}: $${producto.precio}`, 'success');
+        actualizarCarrito();
+    }else{
+        Swal.fire('Error', 'Selecciona un tipo de servicio y realiza una cotización válida', 'error');
+    }
+});
+
 
 function calcularSoat (tipoVehiculo, cilindraje, antiguedad){
     const TARIFABASE = TARIFASBASE.soat[tipoVehiculo];
@@ -125,40 +162,121 @@ function cotizar() {
     const PLACA = document.getElementById('placa').value;
     const MATRICULA = document.getElementById('matricula').value;
     const DOCUMENTOPROPIETARIO = document.getElementById('documentoPropietario').value;
-    let resultado = '';
+    
+    let resultado = {nombre: '', precio: 0}; 
+    
+    if (!TIPOSERVICIO) {
+        return {
+            nombre: 'Error',
+            precio: 0
+        };
+    }
 
     switch (TIPOSERVICIO) {
         case 'soat':
             const TIPOVEHICULO = document.getElementById('tipoVehiculo').value;
             const CILINDRAJE = document.getElementById('cilindraje').value;
             const ANTIGUEDAD = document.getElementById('antiguedad').value;
+            
+            if (!TIPOVEHICULO || !CILINDRAJE || !ANTIGUEDAD) {
+                return {
+                    nombre: 'Error',
+                    precio: 0
+                };
+            }
+
             const VALORSOAT = calcularSoat(TIPOVEHICULO, CILINDRAJE, ANTIGUEDAD);
-            resultado = `El SOAT para un(a) ${TIPOVEHICULO} con placa ${PLACA}, matrícula ${MATRICULA}, con número de documento del propietario ${DOCUMENTOPROPIETARIO} es: $ ${VALORSOAT.toFixed(2)}`;
+            resultado = {
+                nombre: `SOAT para un(a) ${TIPOVEHICULO}`,
+                precio: VALORSOAT
+            };
             break;
+
         case 'seguro':
             const TIPOSEGURO = document.getElementById('tipoSeguro').value;
+            
+            if (!TIPOSEGURO) {
+                return {
+                    nombre: 'Error',
+                    precio: 0
+                };
+            }
+
             const VALORSEGURO = calculoSeguroVehicular(TIPOSEGURO);
-            resultado = `El seguro vehicular ${TIPOSEGURO} para la matrícula ${MATRICULA}, con número de documento del propietario ${DOCUMENTOPROPIETARIO} es: S/ ${VALORSEGURO.toFixed(2)}`;
+            resultado = {
+                nombre: `Seguro ${TIPOSEGURO}`,
+                precio: VALORSEGURO
+            };
             break;
+
         case 'impuesto':
             const VALORCOMERCIAL = parseFloat(document.getElementById('valorComercial').value);
+            
+            if (isNaN(VALORCOMERCIAL) || VALORCOMERCIAL <= 0) {
+                return {
+                    nombre: 'Error',
+                    precio: 0
+                };
+            }
+
             const VALORIMPUESTO = calculoImpuestoVehicular(VALORCOMERCIAL);
-            resultado = `El impuesto vehicular para su vehículo con matrícula ${MATRICULA}, con número de documento del propietario ${DOCUMENTOPROPIETARIO} de valor comercial S/ ${VALORCOMERCIAL} es: S/ ${VALORIMPUESTO.toFixed(2)}`;
+            resultado = {
+                nombre: `Impuesto Vehicular para matrícula ${MATRICULA}`,
+                precio: VALORIMPUESTO
+            };
             break;
+
         default:
-            resultado = "Opción inválida. Por favor, selecciona un servicio.";
+            resultado = {
+                nombre: 'Error',
+                precio: 0
+            };
             break;
     }
 
-    document.getElementById('resultado').innerText = resultado;
-
-    let cotizacion = { TIPOSERVICIO, resultado, PLACA, MATRICULA, DOCUMENTOPROPIETARIO };
-    localStorage.setItem('ultimaCotizacion', JSON.stringify(cotizacion));
+    return resultado;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    let ultimaCotizacion = JSON.parse(localStorage.getItem('ultimaCotizacion'));
-    if (ultimaCotizacion) {
-        document.getElementById('resultado').innerText = `Última cotización: ${ultimaCotizacion.resultado}`;
+
+
+
+let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+function actualizarCarrito() {
+    let cantidadCarrito = document.getElementById('cantidad-carrito');
+    let listaCarrito = document.getElementById('items-carrito');
+    let totalCompra = document.getElementById('total-compra');
+
+    if (cantidadCarrito) {
+        cantidadCarrito.textContent = carrito.length;
     }
-});
+
+    if (listaCarrito) {
+        listaCarrito.innerHTML = '';
+        carrito.forEach((item) => {
+            const li = document.createElement('li');
+            li.textContent = `${item.nombre} - $${item.precio}`;
+            listaCarrito.appendChild(li);
+        });
+    }
+
+    if (totalCompra) {
+        const total = carrito.reduce((suma, item) => suma + item.precio, 0);
+        totalCompra.textContent = total.toFixed(2);
+    }
+
+    mostrarTotalCompra();
+}
+
+function mostrarTotalCompra() {
+    let totalCompra = carrito.reduce((suma, item) => suma + item.precio, 0);
+    const totalElement = document.getElementById('total-compra');
+    if (totalElement) {
+        totalElement.textContent = `Total: $${totalCompra.toFixed(2)}`;
+    } else {
+        console.error('Elemento total-compra no encontrado');
+    }
+}
+
+
+actualizarCarrito();

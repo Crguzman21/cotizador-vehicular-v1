@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cotizador Vehicular</title>
     <link rel="stylesheet" href="./css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <header>
 
         <h1>Cotizador Vehicular</h1>
+
 
     </header>
     <main>
@@ -22,19 +25,28 @@
         </article>
         
         <div class="container">
+
+            
             <h2>Seleccione Tipo De Servicio</h2>
             <select id="tipoServicio">
+                <option value="">Seleccione...</option>
                 <option value="seguro">Seguro Vehicular</option>
                 <option value="soat">SOAT</option>
                 <option value="impuesto">Impuesto Vehicular</option>
             </select>
-
+            
             <div id="form"></div>
-
             <button id="botonCalcular">Calcular</button>
-
+            <button id="botonAnadirCarrito">Añadir Al Carrito</button>
             <div id="resultado"></div>
-
+            
+            <section id="carrito" class="carrito">
+                <h2>Carrito De Compras</h2>
+                <ul id="items-carrito"></ul>
+                <span id="cantidad-carrito">0</span>🛒
+                <p>Total: $<span id="total-compra">0</span></p>
+                <button id="boton-comprar-todo">Comprar Todo</button>
+            </section>
         </div>
     </main>
     <footer>
